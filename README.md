@@ -1,5 +1,5 @@
-# pythonic-equity
+# Ophydia
 
-> Life is too short.
+Pythonic smart contract language for [BVM]().
 
-_pythonic-equity_ is a pythonic language to be compiled and run on [BVM]().
+`.ofd`  -- __ofdc__ --> `.program`
