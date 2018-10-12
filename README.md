@@ -6,7 +6,6 @@ Pythonic smart contract language for [BVM]().
 
 See [ofdc's README](ofdc/README.md)
 
-
 ## Documentations
 
 See [Docs](docs/).
