@@ -2,4 +2,11 @@
 
 Pythonic smart contract language for [BVM]().
 
-`.oph`  -- __ofdc__ --> `.program`
+## Usage
+
+See [ofdc's README](ofdc/README.md)
+
+
+## Documentations
+
+See [Docs](docs/).
