@@ -1,3 +1,5 @@
+# TODO: rename `ophydia` here
+
 .PHONY: test lint clean clean-pyc clean-build clean-test docs docker-build
 
 init:
