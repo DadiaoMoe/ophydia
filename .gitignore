@@ -6,3 +6,11 @@
 
 # idea
 ./idea
+
+# virtual env
+*-venv/
+
+# made files
+build/
+dist/
+*.egg-info/
