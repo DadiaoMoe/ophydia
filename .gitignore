@@ -9,3 +9,8 @@
 
 # virtual env
 ofdc-venv/
+
+# made files
+build/
+dist/
+*.egg-info/

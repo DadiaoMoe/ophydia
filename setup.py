@@ -9,7 +9,7 @@ setup(
     version='0.1.0-beta.1',
     description='Ophydia Programming Language for Bytom',
     long_description_markdown_filename='README.md',
-    author='Dadiao Moe',
+    author='DadiaoMoe',
     author_email='',
     url='https://github.com/DadiaoMoe/ophydia',
     license="MIT",
@@ -18,9 +18,9 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     python_requires='>=3.6',
     py_modules=['ofdc'],
-    install_requires=[
-        'pycryptodome>=3.5.1,<4',
-    ],
+    # install_requires=[
+    #     'pycryptodome>=3.5.1,<4',
+    # ],
     # setup_requires=[
     #     'pytest-runner'
     # ],
