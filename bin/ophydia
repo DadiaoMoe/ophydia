@@ -3,9 +3,10 @@ import argparse
 import json
 import os
 import sys
-# import vyper
+import ophydia
 import warnings
 
+from ophydia import compiler
 # from vyper import compiler, optimizer
 # from vyper.parser.parser import parse_to_lll
 # from vyper.parser import parser_utils
@@ -54,8 +55,8 @@ if __name__ == '__main__':
     # output_format['abi_python'] = lambda code: compiler.mk_full_signature(code)
     # output_format['abi'] = lambda code: json.dumps(compiler.mk_full_signature(code))
     # output_format['json'] = output_format['abi']  # for backwards compatibility
-    # output_format['bytecode'] = lambda code: '0x' + compiler.compile(code).hex()
-    output_format['bytecode'] = lambda code: '0x' + code
+    output_format['bytecode'] = lambda code: '0x' + compiler.compile(code).hex()
+    output_format['raw'] = lambda code: code
     # output_format['bytecode_runtime'] = lambda code: '0x' + compiler.compile(code, bytecode_runtime=True).hex()
     # output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
     # output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
