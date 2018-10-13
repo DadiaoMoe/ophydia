@@ -70,4 +70,7 @@ if __name__ == '__main__':
         for i in uniq(args.format.split(',')):
             if i not in output_format:
                 print('Format {} option not supported, use any csv list of {}.'.format(i, ','.join(output_format.keys())))
-            print(output_format[i](code))
+            print('{}:\n{}\n'.format(i, output_format[i](code)))
+
+        # contract_args = input('Input contract arguments, split by space:')
+        # print('instantiated:\n0x{}'.format(compiler.instantiate(code, contract_args).hex()))
