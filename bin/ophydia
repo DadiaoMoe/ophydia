@@ -16,9 +16,10 @@ warnings.simplefilter('always')
 # sys.tracebacklimit = os.environ.get('VYPER_TRACEBACK_LIMIT', 0)
 
 parser = argparse.ArgumentParser(description='Ophydia programming language for Bytom')
-# parser.add_argument('--version', action='version', version='{0}'.format(vyper.__version__))
-parser.add_argument('input_file', help='Ophydia sourcecode to compile')
+parser.add_argument('--version', action='version', version='{0}'.format(ophydia.__version__))
 parser.add_argument('-f', help='Format to print', default='bytecode', dest='format')
+parser.add_argument('input_file', help='Ophydia sourcecode to compile')
+parser.add_argument('-a', help='Contract arguments', default='', dest='contract_args') # TODO
 # parser.add_argument('--show-gas-estimates', help='Show gas estimates in ir output mode.', action="store_true")
 
 args = parser.parse_args()
@@ -56,7 +57,7 @@ if __name__ == '__main__':
     # output_format['abi'] = lambda code: json.dumps(compiler.mk_full_signature(code))
     # output_format['json'] = output_format['abi']  # for backwards compatibility
     output_format['bytecode'] = lambda code: '0x' + compiler.compile(code).hex()
-    output_format['raw'] = lambda code: code
+    # output_format['raw'] = lambda code: code
     # output_format['bytecode_runtime'] = lambda code: '0x' + compiler.compile(code, bytecode_runtime=True).hex()
     # output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
     # output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
