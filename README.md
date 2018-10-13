@@ -30,7 +30,7 @@ make test
 ## Compiling a contract
 
 ```
-ophydia contract.oph <args>
+ophydia contract.oph
 ```
 
 
