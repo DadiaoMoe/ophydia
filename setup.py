@@ -2,6 +2,7 @@
 
 from setuptools import setup, find_packages
 
+# TODO: clean for eth here
 
 setup(
     name='ophydia',
