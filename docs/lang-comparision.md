@@ -57,7 +57,8 @@ borrower: public(program)
 
 @public
 def repay():
-    requires(amount_loaned, asset_loaned) // seems unnecessary
+    # requires has been removed in equity
+    # requires(amount_loaned, asset_loaned)
     lock_other_with(amount_loaned, asset_loaned, lender)
     lock_with(borrower)
 
