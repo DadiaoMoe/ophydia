@@ -3,4 +3,4 @@ h: public(hash)
 @public
 def reveal(s: string):
     assert sha3(s) == h
-    unlock() // TODO: seems doing nothing
+    unlock() # TODO: seems doing nothing

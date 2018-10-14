@@ -4,8 +4,8 @@ from ophydia import optimizer
 
 
 def compile(code, *args, **kwargs):
-    return bytes(code, 'utf8')
     lll = optimizer.optimize(parser.parse_tree_to_lll(parser.parse(code), code, runtime_only=kwargs.get('bytecode_runtime', False)))
+    return bytes(code, 'utf8')
     asm = compile_lll.compile_to_assembly(lll)
 
     def find_nested_opcode(asm_list, key):
