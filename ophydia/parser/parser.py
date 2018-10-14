@@ -191,16 +191,16 @@ def parse_other_functions(o, otherfuncs, sigs, external_contracts, origcode, glo
 
 # Main python parse tree => LLL method
 def parse_tree_to_lll(code, origcode, runtime_only=False):
-    # TODO: breakpoint
     global_ctx = GlobalContext.get_global_context(code)
     _names_def = [_def.name for _def in global_ctx._defs]
     # Checks for duplicate function names
     if len(set(_names_def)) < len(_names_def):
         raise FunctionDeclarationException("Duplicate function name: %s" % [name for name in _names_def if _names_def.count(name) > 1][0])
-    _names_events = [_event.target.id for _event in global_ctx._events]
-    # Checks for duplicate event names
-    if len(set(_names_events)) < len(_names_events):
-        raise EventDeclarationException("Duplicate event name: %s" % [name for name in _names_events if _names_events.count(name) > 1][0])
+    # TODO: remove events
+    # _names_events = [_event.target.id for _event in global_ctx._events]
+    # # Checks for duplicate event names
+    # if len(set(_names_events)) < len(_names_events):
+    #     raise EventDeclarationException("Duplicate event name: %s" % [name for name in _names_events if _names_events.count(name) > 1][0])
     # Initialization function
     initfunc = [_def for _def in global_ctx._defs if is_initializer(_def)]
     # Default function
@@ -211,8 +211,10 @@ def parse_tree_to_lll(code, origcode, runtime_only=False):
     external_contracts = {}
     # Create the main statement
     o = ['seq']
-    if global_ctx._events:
-        sigs = parse_events(sigs, global_ctx._events, global_ctx._custom_units)
+    # TODO: remove events
+    # if global_ctx._events:
+    #     sigs = parse_events(sigs, global_ctx._events, global_ctx._custom_units)
+    # TODO: breakpoint
     if global_ctx._contracts:
         external_contracts = parse_external_contracts(external_contracts, global_ctx._contracts)
     # If there is an init func...
