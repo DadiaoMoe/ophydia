@@ -3,7 +3,6 @@
 from setuptools import setup, find_packages
 
 # TODO: clean for eth here
-
 setup(
     name='ophydia',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.

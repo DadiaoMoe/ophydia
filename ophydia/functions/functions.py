@@ -343,7 +343,7 @@ def extract32(expr, args, kwargs, context):
     else:
         return o
 
-
+# TODO: adapt for btm
 @signature(('num_literal', 'int128', 'uint256', 'decimal'), 'str_literal')
 def as_wei_value(expr, args, kwargs, context):
     # Denominations

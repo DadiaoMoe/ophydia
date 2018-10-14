@@ -43,7 +43,7 @@ def bytes_to_int(bytez):
         o = o * 256 + b
     return o
 
-
+# TODO: adapt for btm
 # Encodes an address using ethereum's checksum scheme
 def checksum_encode(addr):  # Expects an input of the form 0x<40 hex chars>
     assert addr[:2] == '0x' and len(addr) == 42
@@ -141,6 +141,7 @@ valid_units = ['wei', 'sec']
 # Valid attributes for global variables
 valid_global_keywords = ['public', 'modifying', 'event', 'constant'] + valid_units + valid_call_keywords
 
+# TODO: adapt for btm
 # Cannot be used for variable or member naming
 reserved_words = [
     'int128', 'uint256', 'address', 'bytes32',
