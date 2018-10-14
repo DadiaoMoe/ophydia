@@ -1,32 +1,32 @@
 import ast
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     EventDeclarationException,
     FunctionDeclarationException,
     StructureException,
     TypeMismatchException,
     VariableDeclarationException,
 )
-from vyper.utils import (
+from ophydia.utils import (
     is_varname_valid,
     SizeLimits,
     valid_global_keywords,
 )
-from vyper.premade_contracts import (
+from ophydia.premade_contracts import (
     premade_contracts,
 )
-from vyper.parser.context import Context
-from vyper.parser.expr import Expr
-from vyper.parser.parser_utils import (
+from ophydia.parser.context import Context
+from ophydia.parser.expr import Expr
+from ophydia.parser.parser_utils import (
     decorate_ast_with_source,
     getpos,
     resolve_negative_literals,
 )
-from vyper.signatures.function_signature import (
+from ophydia.signatures.function_signature import (
     ContractRecord,
     VariableRecord
 )
-from vyper.types import (
+from ophydia.types import (
     parse_type,
     ContractType,
     ByteArrayType,

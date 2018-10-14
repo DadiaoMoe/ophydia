@@ -1,19 +1,19 @@
 import ast
 
-from vyper.types import (
+from ophydia.types import (
     get_size_of_type,
     canonicalize_type,
     parse_type,
     ByteArrayType
 )
-from vyper.utils import (
+from ophydia.utils import (
     sha3,
     is_varname_valid,
     bytes_to_int,
     ceil32
 )
-from vyper.signatures.function_signature import VariableRecord
-from vyper.exceptions import (
+from ophydia.signatures.function_signature import VariableRecord
+from ophydia.exceptions import (
     InvalidTypeException,
     VariableDeclarationException,
     EventDeclarationException

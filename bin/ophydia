@@ -7,13 +7,13 @@ import ophydia
 import warnings
 
 from ophydia import compiler
-# from vyper import compiler, optimizer
-# from vyper.parser.parser import parse_to_lll
-# from vyper.parser import parser_utils
-# from vyper import compile_lll
+# from ophydia import compiler, optimizer
+# from ophydia.parser.parser import parse_to_lll
+# from ophydia.parser import parser_utils
+# from ophydia import compile_lll
 
 warnings.simplefilter('always')
-# sys.tracebacklimit = os.environ.get('VYPER_TRACEBACK_LIMIT', 0)
+# sys.tracebacklimit = os.environ.get('OPHYDIA_TRACEBACK_LIMIT', 0)
 
 parser = argparse.ArgumentParser(description='Ophydia programming language for Bytom')
 parser.add_argument('--version', action='version', version='{0}'.format(ophydia.__version__))

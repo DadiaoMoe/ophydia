@@ -1,6 +1,6 @@
 import ast
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     InvalidLiteralException,
     NonPayableViolationException,
     StructureException,
@@ -8,16 +8,16 @@ from vyper.exceptions import (
     VariableDeclarationException,
     ParserException
 )
-from vyper.parser.lll_node import LLLnode
-from vyper.parser import self_call
-from vyper.parser.parser_utils import (
+from ophydia.parser.lll_node import LLLnode
+from ophydia.parser import self_call
+from ophydia.parser.parser_utils import (
     getpos,
     unwrap_location,
     get_original_if_0_prefixed,
     get_number_as_fraction,
     add_variable_offset,
 )
-from vyper.utils import (
+from ophydia.utils import (
     MemoryPositions,
     SizeLimits,
     bytes_to_int,
@@ -26,7 +26,7 @@ from vyper.utils import (
     checksum_encode,
     is_varname_valid,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     ContractType,
@@ -36,10 +36,10 @@ from vyper.types import (
     StructType,
     TupleType,
 )
-from vyper.types import (
+from ophydia.types import (
     is_base_type,
 )
-from vyper.types import (
+from ophydia.types import (
     are_units_compatible,
     is_numeric_type,
     combine_units
@@ -434,7 +434,7 @@ class Expr(object):
             raise Exception("%r %r" % (o, o.typ))
 
     def build_in_comparator(self):
-        from vyper.parser.parser import make_setter
+        from ophydia.parser.parser import make_setter
         left = Expr(self.expr.left, self.context).lll_node
         right = Expr(self.expr.comparators[0], self.context).lll_node
 
@@ -640,10 +640,10 @@ class Expr(object):
 
     # Function calls
     def call(self):
-        from vyper.parser.parser import (
+        from ophydia.parser.parser import (
             external_contract_call
         )
-        from vyper.functions import (
+        from ophydia.functions import (
             dispatch_table,
         )
 

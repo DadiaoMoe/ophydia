@@ -2,8 +2,8 @@ import abc
 import ast
 import copy
 
-from vyper.exceptions import InvalidTypeException
-from vyper.utils import (
+from ophydia.exceptions import InvalidTypeException
+from ophydia.utils import (
     base_types,
     ceil32,
     is_varname_valid,

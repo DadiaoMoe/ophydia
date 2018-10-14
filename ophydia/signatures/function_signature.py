@@ -1,24 +1,24 @@
 import ast
 from collections import Counter
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     InvalidTypeException,
     StructureException,
     FunctionDeclarationException
 )
-from vyper.types import ByteArrayType
-from vyper.types import (
+from ophydia.types import ByteArrayType
+from ophydia.types import (
     canonicalize_type,
     get_size_of_type,
     parse_type,
     TupleType
 )
-from vyper.utils import (
+from ophydia.utils import (
     fourbytes_to_int,
     is_varname_valid,
     sha3,
 )
-from vyper.parser.lll_node import LLLnode
+from ophydia.parser.lll_node import LLLnode
 
 
 # Function argument

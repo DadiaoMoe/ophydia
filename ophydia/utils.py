@@ -2,8 +2,8 @@ import binascii
 import re
 
 from collections import OrderedDict
-from vyper.exceptions import InvalidLiteralException
-from vyper.opcodes import opcodes
+from ophydia.exceptions import InvalidLiteralException
+from ophydia.opcodes import opcodes
 
 try:
     from Crypto.Hash import keccak
@@ -167,7 +167,7 @@ valid_lll_macros = [
 # Is a variable or member variable name valid?
 # Same conditions apply for function names and events
 def is_varname_valid(varname, custom_units):
-    from vyper.functions import dispatch_table, stmt_dispatch_table
+    from ophydia.functions import dispatch_table, stmt_dispatch_table
     built_in_functions = [x for x in stmt_dispatch_table.keys()] + \
       [x for x in dispatch_table.keys()]
     if custom_units is None:

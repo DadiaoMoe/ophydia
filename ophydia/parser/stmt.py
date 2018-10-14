@@ -1,7 +1,7 @@
 import ast
 import re
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     ConstancyViolationException,
     StructureException,
     TypeMismatchException,
@@ -9,12 +9,12 @@ from vyper.exceptions import (
     EventDeclarationException,
     InvalidLiteralException
 )
-from vyper.functions import (
+from ophydia.functions import (
     stmt_dispatch_table,
     dispatch_table
 )
-from vyper.parser import self_call
-from vyper.parser.parser_utils import (
+from ophydia.parser import self_call
+from ophydia.parser.parser_utils import (
     base_type_conversion,
     getpos,
     LLLnode,
@@ -22,7 +22,7 @@ from vyper.parser.parser_utils import (
     make_setter,
     unwrap_location,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     ListType,
@@ -30,21 +30,21 @@ from vyper.types import (
     StructType,
     NullType
 )
-from vyper.types import (
+from ophydia.types import (
     get_size_of_type,
     is_base_type,
     parse_type,
     NodeType
 )
-from vyper.types import (
+from ophydia.types import (
     are_units_compatible,
 )
-from vyper.utils import (
+from ophydia.utils import (
     SizeLimits,
     sha3,
     fourbytes_to_int
 )
-from vyper.parser.expr import (
+from ophydia.parser.expr import (
     Expr
 )
 

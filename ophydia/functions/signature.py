@@ -1,25 +1,25 @@
 import ast
 
-from vyper.parser.parser_utils import (
+from ophydia.parser.parser_utils import (
     get_original_if_0_prefixed,
 )
-from vyper.exceptions import (
+from ophydia.exceptions import (
     TypeMismatchException,
     StructureException,
     InvalidLiteralException,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType
 )
-from vyper.types import (
+from ophydia.types import (
     parse_type,
     is_base_type
 )
-from vyper.parser.expr import (
+from ophydia.parser.expr import (
     Expr,
 )
-from vyper.utils import (
+from ophydia.utils import (
     SizeLimits
 )
 

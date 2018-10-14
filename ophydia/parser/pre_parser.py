@@ -9,8 +9,8 @@ from tokenize import (
     tokenize,
     untokenize,
 )
-from vyper.exceptions import StructureException
-from vyper import __version__
+from ophydia.exceptions import StructureException
+from ophydia import __version__
 
 
 def _parser_version_str(version_str):

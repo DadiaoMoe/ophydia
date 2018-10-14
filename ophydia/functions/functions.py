@@ -1,6 +1,6 @@
 import ast
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     ConstancyViolationException,
     InvalidLiteralException,
     StructureException,
@@ -10,7 +10,7 @@ from .signature import (
     signature,
     Optional,
 )
-from vyper.parser.parser_utils import (
+from ophydia.parser.parser_utils import (
     byte_array_to_num,
     LLLnode,
     get_length,
@@ -21,33 +21,33 @@ from vyper.parser.parser_utils import (
     add_variable_offset,
     unwrap_location
 )
-from vyper.parser.expr import (
+from ophydia.parser.expr import (
     Expr,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     TupleType,
     ListType
 )
-from vyper.types import (
+from ophydia.types import (
     are_units_compatible,
     parse_type,
     is_base_type,
     get_size_of_type,
 )
-from vyper.utils import (
+from ophydia.utils import (
     MemoryPositions,
     SizeLimits,
     DECIMAL_DIVISOR,
     RLP_DECODER_ADDRESS
 )
-from vyper.utils import (
+from ophydia.utils import (
     bytes_to_int,
     fourbytes_to_int,
     sha3,
 )
-from vyper.types.convert import (
+from ophydia.types.convert import (
     convert,
 )
 

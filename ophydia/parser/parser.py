@@ -2,7 +2,7 @@ import ast
 import copy
 
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     InvalidLiteralException,
     StructureException,
     TypeMismatchException,
@@ -10,20 +10,20 @@ from vyper.exceptions import (
     FunctionDeclarationException,
     EventDeclarationException
 )
-from vyper.signatures.function_signature import (
+from ophydia.signatures.function_signature import (
     FunctionSignature,
     VariableRecord,
 )
-from vyper.signatures.event_signature import (
+from ophydia.signatures.event_signature import (
     EventSignature,
 )
-from vyper.parser.stmt import Stmt
-from vyper.parser.expr import Expr
-from vyper.parser.context import Context
-from vyper.parser.global_context import GlobalContext
-from vyper.parser.lll_node import LLLnode
-from vyper.parser.pre_parser import pre_parse
-from vyper.parser.parser_utils import (
+from ophydia.parser.stmt import Stmt
+from ophydia.parser.expr import Expr
+from ophydia.parser.context import Context
+from ophydia.parser.global_context import GlobalContext
+from ophydia.parser.lll_node import LLLnode
+from ophydia.parser.pre_parser import pre_parse
+from ophydia.parser.parser_utils import (
     pack_arguments,
     make_setter,
     base_type_conversion,
@@ -34,22 +34,22 @@ from vyper.parser.parser_utils import (
     resolve_negative_literals,
     unwrap_location,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     ListType,
 )
-from vyper.types import (
+from ophydia.types import (
     get_size_of_type,
     is_base_type,
     ceil32,
 )
-from vyper.utils import (
+from ophydia.utils import (
     MemoryPositions,
     LOADED_LIMIT_MAP,
     string_to_bytes,
 )
-from vyper.utils import (
+from ophydia.utils import (
     bytes_to_int,
     calc_mem_gas,
 )

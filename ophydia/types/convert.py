@@ -1,26 +1,26 @@
 import ast
 import warnings
 
-from vyper.functions.signature import (
+from ophydia.functions.signature import (
     signature
 )
-from vyper.parser.parser_utils import (
+from ophydia.parser.parser_utils import (
     LLLnode,
     getpos,
     byte_array_to_num
 )
-from vyper.exceptions import (
+from ophydia.exceptions import (
     InvalidLiteralException,
     TypeMismatchException,
     ParserException,
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
 )
-from vyper.types import (
+from ophydia.types import (
     get_type,
 )
-from vyper.utils import (
+from ophydia.utils import (
     DECIMAL_DIVISOR,
     MemoryPositions,
     SizeLimits
@@ -104,14 +104,14 @@ def convert(expr, context):
     if isinstance(expr.args[1], ast.Str):
         warnings.warn(
             "String parameter has been removed, see VIP1026). "
-            "Use a vyper type instead.",
+            "Use a ophydia type instead.",
             DeprecationWarning
         )
 
     if isinstance(expr.args[1], ast.Name):
         output_type = expr.args[1].id
     else:
-        raise ParserException("Invalid conversion type, use valid vyper type.", expr)
+        raise ParserException("Invalid conversion type, use valid ophydia type.", expr)
 
     if output_type in conversion_table:
         return conversion_table[output_type](expr, context)

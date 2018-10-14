@@ -1,6 +1,6 @@
-from vyper.parser import parser
-from vyper import compile_lll
-from vyper import optimizer
+from ophydia.parser import parser
+from ophydia import compile_lll
+from ophydia import optimizer
 
 
 def compile(code, *args, **kwargs):

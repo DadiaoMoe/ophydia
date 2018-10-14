@@ -1,17 +1,17 @@
-from vyper.exceptions import (
+from ophydia.exceptions import (
     ConstancyViolationException
 )
-from vyper.parser.lll_node import (
+from ophydia.parser.lll_node import (
     LLLnode
 )
-from vyper.parser.parser_utils import (
+from ophydia.parser.parser_utils import (
     pack_arguments,
     getpos
 )
-from vyper.signatures.function_signature import (
+from ophydia.signatures.function_signature import (
     FunctionSignature
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     ListType,
@@ -22,7 +22,7 @@ from vyper.types import (
 
 
 def call_lookup_specs(stmt_expr, context):
-    from vyper.parser.expr import Expr
+    from ophydia.parser.expr import Expr
     method_name = stmt_expr.func.attr
     expr_args = [Expr(arg, context).lll_node for arg in stmt_expr.args]
     sig = FunctionSignature.lookup_sig(context.sigs, method_name, expr_args, stmt_expr, context)

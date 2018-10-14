@@ -1,16 +1,16 @@
 import ast
 
-from vyper.utils import GAS_IDENTITY, GAS_IDENTITYWORD
+from ophydia.utils import GAS_IDENTITY, GAS_IDENTITYWORD
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     InvalidLiteralException,
     TypeMismatchException,
     StructureException
 )
-from vyper.parser.lll_node import (
+from ophydia.parser.lll_node import (
     LLLnode
 )
-from vyper.types import (
+from ophydia.types import (
     BaseType,
     ByteArrayType,
     ContractType,
@@ -20,13 +20,13 @@ from vyper.types import (
     TupleType,
     ListType,
 )
-from vyper.types import (
+from ophydia.types import (
     is_base_type,
     are_units_compatible,
     get_size_of_type,
     ceil32
 )
-from vyper.utils import (
+from ophydia.utils import (
     SizeLimits,
     MemoryPositions,
     DECIMAL_DIVISOR

@@ -1,6 +1,6 @@
-from vyper.parser.parser import LLLnode
+from ophydia.parser.parser import LLLnode
 from .opcodes import opcodes
-from vyper.utils import MemoryPositions
+from ophydia.utils import MemoryPositions
 
 
 def num_to_bytearray(x):

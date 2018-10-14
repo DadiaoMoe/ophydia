@@ -1,16 +1,16 @@
-from vyper.utils import (
+from ophydia.utils import (
     MemoryPositions,
     is_varname_valid,
 )
-from vyper.types import (
+from ophydia.types import (
     get_size_of_type
 )
 
-from vyper.exceptions import (
+from ophydia.exceptions import (
     VariableDeclarationException,
 )
 
-from vyper.signatures.function_signature import (
+from ophydia.signatures.function_signature import (
     VariableRecord,
 )
 
