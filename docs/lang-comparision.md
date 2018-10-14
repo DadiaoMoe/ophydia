@@ -1,7 +1,9 @@
 # Comparisons between Equity & Ophydia
 
 ## RevealPreimage
+
 __Equity__
+
 ```
 contract RevealPreimage(hash: Hash) locks amount of asset {
   clause reveal(string: String) {
@@ -12,6 +14,7 @@ contract RevealPreimage(hash: Hash) locks amount of asset {
 ```
 
 __Ophydia__
+
 ```
 h: public(hash)
 
@@ -23,7 +26,9 @@ def reveal(s: string):
 
 
 ## LoanCollateral
+
 __Equity__
+
 ```
 contract LoanCollateral(assetLoaned: Asset,
                         amountLoaned: Amount,
@@ -42,6 +47,7 @@ contract LoanCollateral(assetLoaned: Asset,
 ```
 
 __Ophydia__
+
 ```
 asset_loaned: public(asset)
 amount_loaned: public(amount)
@@ -51,7 +57,7 @@ borrower: public(program)
 
 @public
 def repay():
-    requires(amount_loaned, asset_loaned)
+    requires(amount_loaned, asset_loaned) // seems unnecessary
     lock_other_with(amount_loaned, asset_loaned, lender)
     lock_with(borrower)
 
@@ -63,7 +69,9 @@ def default():
 
 
 ## AssignVar
+
 __Equity__
+
 ```
 contract TestAssignVar(result: Integer) locks valueAmount of valueAsset {
   clause LockWithMath(first: Integer, second: Integer) {
@@ -76,6 +84,7 @@ contract TestAssignVar(result: Integer) locks valueAmount of valueAsset {
 ```
 
 __Ophydia__
+
 ```
 result: public(integer)
 
@@ -89,7 +98,9 @@ def lock_with_math(first: integer, second:integer):
 
 
 ## IfNesting
+
 __Equity__
+
 ```
 contract TestIfNesting(a: Integer, count:Integer) locks valueAmount of valueAsset {
   clause check(b: Integer, c: Integer, d: Integer) {
@@ -117,6 +128,7 @@ contract TestIfNesting(a: Integer, count:Integer) locks valueAmount of valueAsse
 ```
 
 __Ophydia__
+
 ```
 a: public(integer)
 count: public(integer)
@@ -142,8 +154,11 @@ def cancel(e: integer, f:integer):
     unlock()
 ```
 
+
 ## PriceChanger
+
 __Equity__
+
 ```
 contract PriceChanger(askAmount: Amount, askAsset: Asset, sellerKey: PublicKey, sellerProg: Program) locks valueAmount of valueAsset {
   clause changePrice(newAmount: Amount, newAsset: Asset, sig: Signature) {
@@ -155,23 +170,71 @@ contract PriceChanger(askAmount: Amount, askAsset: Asset, sellerKey: PublicKey, 
     unlock valueAmount of valueAsset
   }
 }
-
 ```
 
 __Ophydia__
+
+Ohydia doesn't not support recusive contract, and therefore is more secure (contract deployer cannot change the rules unless deploying a new contract).
+
+
+## LockWith2of3Keys
+
+__Equity__
+
 ```
-ask_amount: public(amount)
-ask_asset: public(asset)
-seller_key: public(publickey)
-seller_prog: public(program)
+contract LockWith3Keys(pubkey1, pubkey2, pubkey3: PublicKey) locks amount of asset {
+  clause unlockWith2Sigs(sig1, sig2: Signature) {
+    verify checkTxMultiSig([pubkey1, pubkey2, pubkey3], [sig1, sig2])
+    unlock amount of asset
+  }
+}
+```
+
+__Ophydia__
+
+```
+pubkey1: public(publickey)
+pubkey2: public(publickey)
+pubkey3: public(publickey)
 
 @public
-def change_price(new_amount: amount, new_asset: asset, sig: signature):
-    assert check_tx_sig(seller_key, sig)
-    lock_with() #####
+def unlock_with_2sigs(sig1: signature, sig2: signature):
+    assert checkTxMultiSig([pubkey1, pubkey2, pubkey3], [sig1, sig2])
+    unlock()
+```
+
+
+## TestConstantMath
+
+__Equity__
+
+```
+contract TestConstantMath(result: Integer, hashByte: Hash, hashStr: Hash, outcome: Boolean) locks valueAmount of valueAsset {
+  clause calculation(left: Integer, right: Integer, boolResult: Boolean) {
+    verify result == left + right + 10
+    verify hashByte == sha3(0x31323330)
+    verify hashStr == sha3('string')
+    verify !outcome
+    verify boolResult && (result == left + 20)
+    unlock valueAmount of valueAsset
+  }
+}
+```
+
+__Ophydia__
+
+```
+result: public(integer)
+byte_hash: public(hash)
+str_hash: public(hash)
+outcome: public(boolean)
 
 @public
-def redeem():
-    lock_other_with(ask_amount, ask_asset, seller_prog)
+def calculation(left: integer, right: integer, bool_result: boolean):
+    assert result == left + right + 10
+    assert byte_hash == sha3(0x31323330)
+    assert str_hash == sha3('string')
+    assert !outcome
+    assert bool_result && (result == left + 20)
     unlock()
 ```
