@@ -7,13 +7,13 @@ import ophydia
 import warnings
 
 from ophydia import compiler
-# from vyper import compiler, optimizer
-# from vyper.parser.parser import parse_to_lll
-# from vyper.parser import parser_utils
-# from vyper import compile_lll
+# from ophydia import compiler, optimizer
+# from ophydia.parser.parser import parse_to_lll
+# from ophydia.parser import parser_utils
+# from ophydia import compile_lll
 
 warnings.simplefilter('always')
-# sys.tracebacklimit = os.environ.get('VYPER_TRACEBACK_LIMIT', 0)
+# sys.tracebacklimit = os.environ.get('OPHYDIA_TRACEBACK_LIMIT', 0)
 
 parser = argparse.ArgumentParser(description='Ophydia programming language for Bytom')
 parser.add_argument('--version', action='version', version='{0}'.format(ophydia.__version__))
@@ -58,8 +58,8 @@ if __name__ == '__main__':
     output_format['bytecode'] = lambda code: '0x' + compiler.compile(code).hex()
     # output_format['raw'] = lambda code: code
     # output_format['bytecode_runtime'] = lambda code: '0x' + compiler.compile(code, bytecode_runtime=True).hex()
-    # output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
-    # output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
+    output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
+    output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
 
     with open(args.input_file) as fh:
         code = fh.read()
@@ -72,5 +72,6 @@ if __name__ == '__main__':
                 print('Format {} option not supported, use any csv list of {}.'.format(i, ','.join(output_format.keys())))
             print('{}:\n{}\n'.format(i, output_format[i](code)))
 
+        # TODO: instantiate
         # contract_args = input('Input contract arguments, split by space:')
         # print('instantiated:\n0x{}'.format(compiler.instantiate(code, contract_args).hex()))

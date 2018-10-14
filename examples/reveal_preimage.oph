@@ -1,0 +1,11 @@
+# @version 0.1.0
+
+h: public(integer)
+# h: public(int128)
+
+@public
+def reveal(s: string):
+    h = -1
+    b = -2
+    # assert sha3(s) == h
+    # unlock() # TODO: seems doing nothing

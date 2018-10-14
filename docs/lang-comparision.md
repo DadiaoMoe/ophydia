@@ -200,7 +200,7 @@ pubkey3: public(publickey)
 
 @public
 def unlock_with_2sigs(sig1: signature, sig2: signature):
-    assert checkTxMultiSig([pubkey1, pubkey2, pubkey3], [sig1, sig2])
+    assert check_tx_multi_sig([pubkey1, pubkey2, pubkey3], [sig1, sig2])
     unlock()
 ```
 

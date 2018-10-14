@@ -1,0 +1,10 @@
+# @version 0.1.0
+
+contract reveal_preimage:
+
+    h: public(hash)
+
+    @public
+    def reveal(s: string):
+        assert sha3(s) == h
+        unlock() # TODO: seems doing nothing
