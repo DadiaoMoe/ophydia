@@ -164,7 +164,7 @@ def parse_external_contracts(external_contracts, _contracts):
         external_contracts[_contractname] = contract
     return external_contracts
 
-
+# TODO: correct gas here
 def parse_other_functions(o, otherfuncs, sigs, external_contracts, origcode, global_ctx, default_function, runtime_only):
     sub = ['seq', initializer_lll]
     add_gas = initializer_lll.gas

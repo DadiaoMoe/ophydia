@@ -88,7 +88,7 @@ class MemoryPositions:
     FREE_LOOP_INDEX = 288
     RESERVED_MEMORY = 320
 
-
+# TODO: scale up here?
 # Sizes of different data types. Used to clamp types.
 class SizeLimits:
     ADDRSIZE = 2**160
