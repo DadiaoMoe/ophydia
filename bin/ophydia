@@ -58,8 +58,8 @@ if __name__ == '__main__':
     output_format['bytecode'] = lambda code: '0x' + compiler.compile(code).hex()
     # output_format['raw'] = lambda code: code
     # output_format['bytecode_runtime'] = lambda code: '0x' + compiler.compile(code, bytecode_runtime=True).hex()
-    # output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
-    # output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
+    output_format['ir'] = lambda code: optimizer.optimize(parse_to_lll(code))
+    output_format['asm'] = lambda code: get_asm(compile_lll.compile_to_assembly(optimizer.optimize(parse_to_lll(code))))
 
     with open(args.input_file) as fh:
         code = fh.read()

@@ -7,13 +7,20 @@ __Ophydia__ is inspired by __Vyper__, and simplified by removing _event_ and _@p
 | - | - | - |
 | Integer | integer | integer |
 | Amount | amount | integer |
-| Boolean | boolean | boolean |
+| Boolean | bool | boolean |
 | String | string | string |
 | Hash | hash | string |
 | Asset | asset | string |
 | PublicKey | publickey | string |
 | Signature | signature | string |
 | Program | program | string |
+
+## how to define constant
+__TODO:__ support constant and migrate to integet and amount
+
+```
+TOTAL_SUPPLY: constant(uint256) = 10000000
+```
 
 ## builtin functions
 + `abs(n)` returns the absolute value of the value n.
@@ -28,3 +35,4 @@ __Ophydia__ is inspired by __Vyper__, and simplified by removing _event_ and _@p
 + `sha256(s)` returns the hashing result of byte type string parameter s via SHA-256
 + `check_tx_sig(key, sig)` verifies whether the multi-signature of the transaction is correct based on one PublicKey and one Signature.
 + `check_tx_multi_sig([key1, key2, …], [sig1, sig2, …])` verifies the multi-signature of the transaction is correct based on multiple PublicKeys and multiple Signatures.
+

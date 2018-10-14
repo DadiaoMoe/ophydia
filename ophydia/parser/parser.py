@@ -191,6 +191,7 @@ def parse_other_functions(o, otherfuncs, sigs, external_contracts, origcode, glo
 
 # Main python parse tree => LLL method
 def parse_tree_to_lll(code, origcode, runtime_only=False):
+    # TODO: breakpoint
     global_ctx = GlobalContext.get_global_context(code)
     _names_def = [_def.name for _def in global_ctx._defs]
     # Checks for duplicate function names

@@ -42,7 +42,8 @@ class GlobalContext:
 
     def __init__(self):
         self._contracts = dict()
-        self._events = list()
+        # TDOO: remove events
+        # self._events = list()
         self._globals = dict()
         self._defs = list()
         self._getters = list()
@@ -57,13 +58,18 @@ class GlobalContext:
         for item in code:
             # Contract references
             if isinstance(item, ast.ClassDef):
-                if global_ctx._events or global_ctx._globals or global_ctx._defs:
-                    raise StructureException("External contract declarations must come before event declarations, global declarations, and function definitions", item)
+                # TDOO: remove events
+                # if global_ctx._events or global_ctx._globals or global_ctx._defs:
+                if global_ctx._globals or global_ctx._defs:
+                    # raise StructureException("External contract declarations must come before event declarations, global declarations, and function definitions", item)
+                    raise StructureException("External contract declarations must come before global declarations and function definitions", item)
                 global_ctx._contracts[item.name] = global_ctx.add_contract(item.body)
             # Statements of the form:
             # variable_name: type
             elif isinstance(item, ast.AnnAssign):
-                global_ctx.add_globals_and_events(item)
+                # TDOO: remove events
+                # global_ctx.add_globals_and_events(item)
+                global_ctx.add_globals(item)
             # Function definitions
             elif isinstance(item, ast.FunctionDef):
                 if item.name in global_ctx._globals:
@@ -109,7 +115,9 @@ class GlobalContext:
         elif isinstance(typ, ListType):
             o = []
             for funname, head, tail, base in cls._mk_getter_helper(typ.subtype, depth + 1):
-                o.append((funname, ("arg%d: int128, " % depth) + head, ("[arg%d]" % depth) + tail, base))
+                # TODO: change int128 to integer 
+                # o.append((funname, ("arg%d: int128, " % depth) + head, ("[arg%d]" % depth) + tail, base))
+                o.append((funname, ("arg%d: integer, " % depth) + head, ("[arg%d]" % depth) + tail, base))
             return o
         # Mapping type: do not extend the getter name, add an input argument for
         # the key in the map, add a value access to the return statement
@@ -202,15 +210,25 @@ class GlobalContext:
 
         elif expr.typ != annotation_type:
             fail = True
+            # TODO: 
             # special case for literals, which can be uint256 types as well.
+            # if self.is_instances([expr.typ, annotation_type], BaseType) and \
+            #    [annotation_type.typ, expr.typ.typ] == ['uint256', 'int128'] and \
+            #    SizeLimits.in_bounds('uint256', expr.value):
+            #     fail = False
+
+            # elif self.is_instances([expr.typ, annotation_type], BaseType) and \
+            #    [annotation_type.typ, expr.typ.typ] == ['int128', 'int128'] and \
+            #    SizeLimits.in_bounds('int128', expr.value):
+            #     fail = False
             if self.is_instances([expr.typ, annotation_type], BaseType) and \
-               [annotation_type.typ, expr.typ.typ] == ['uint256', 'int128'] and \
-               SizeLimits.in_bounds('uint256', expr.value):
+               [annotation_type.typ, expr.typ.typ] == ['integer', 'integer'] and \
+               SizeLimits.in_bounds('integer', expr.value):
                 fail = False
 
             elif self.is_instances([expr.typ, annotation_type], BaseType) and \
-               [annotation_type.typ, expr.typ.typ] == ['int128', 'int128'] and \
-               SizeLimits.in_bounds('int128', expr.value):
+               [annotation_type.typ, expr.typ.typ] == ['amount', 'amount'] and \
+               SizeLimits.in_bounds('amount', expr.value):
                 fail = False
 
         if fail:
@@ -230,7 +248,9 @@ class GlobalContext:
         else:
             raise StructureException('Incorrectly formatted struct', item)
 
-    def add_globals_and_events(self, item):
+    # TODO: remove events
+    # def add_globals_and_events(self, item):
+    def add_globals(self, item):
         item_attributes = {"public": False}
 
         # Handle constants.
@@ -239,6 +259,7 @@ class GlobalContext:
             return
 
         # Handle events.
+        # TODO: events has been skipped
         if not (isinstance(item.annotation, ast.Call) and item.annotation.func.id == "event"):
             item_name, item_attributes = self.get_item_name_and_attributes(item, item_attributes)
             if not all([attr in valid_global_keywords for attr in item_attributes.keys()]):
@@ -246,13 +267,17 @@ class GlobalContext:
 
         if item.value is not None:
             raise StructureException('May not assign value whilst defining type', item)
+        # TODO: remove events
+        # elif isinstance(item.annotation, ast.Call) and item.annotation.func.id == "event":
+        #     if self._globals or len(self._defs):
+        #         raise EventDeclarationException("Events must all come before global declarations and function definitions", item)
+        #     self._events.append(item)
         elif isinstance(item.annotation, ast.Call) and item.annotation.func.id == "event":
-            if self._globals or len(self._defs):
-                raise EventDeclarationException("Events must all come before global declarations and function definitions", item)
-            self._events.append(item)
+            raise EventDeclarationException("Events are not supported")
         elif not isinstance(item.target, ast.Name):
             raise StructureException("Can only assign type to variable in top-level statement", item)
 
+        # TODO: custom unit definition
         # Is this a custom unit definition.
         elif item.target.id == 'units':
             if not self._custom_units:
@@ -280,21 +305,23 @@ class GlobalContext:
 
         # If the type declaration is of the form public(<type here>), then proceed with
         # the underlying type but also add getters
-        elif isinstance(item.annotation, ast.Call) and item.annotation.func.id == "address":
-            if item.annotation.args[0].id not in premade_contracts:
-                raise VariableDeclarationException("Unsupported premade contract declaration", item.annotation.args[0])
-            premade_contract = premade_contracts[item.annotation.args[0].id]
-            self._contracts[item.target.id] = self.add_contract(premade_contract.body)
-            self._globals[item.target.id] = VariableRecord(item.target.id, len(self._globals), BaseType('address'), True)
+        # TODO: support for premade_contract
+        # elif isinstance(item.annotation, ast.Call) and item.annotation.func.id == "address":
+        #     if item.annotation.args[0].id not in premade_contracts:
+        #         raise VariableDeclarationException("Unsupported premade contract declaration", item.annotation.args[0])
+        #     premade_contract = premade_contracts[item.annotation.args[0].id]
+        #     self._contracts[item.target.id] = self.add_contract(premade_contract.body)
+        #     self._globals[item.target.id] = VariableRecord(item.target.id, len(self._globals), BaseType('address'), True)
 
-        elif item_name in self._contracts:
-            self._globals[item.target.id] = ContractRecord(item.target.id, len(self._globals), ContractType(item_name), True)
-            if item_attributes["public"]:
-                typ = ContractType(item_name)
-                for getter in self.mk_getter(item.target.id, typ):
-                    self._getters.append(self.parse_line('\n' * (item.lineno - 1) + getter))
-                    self._getters[-1].pos = getpos(item)
+        # elif item_name in self._contracts:
+        #     self._globals[item.target.id] = ContractRecord(item.target.id, len(self._globals), ContractType(item_name), True)
+        #     if item_attributes["public"]:
+        #         typ = ContractType(item_name)
+        #         for getter in self.mk_getter(item.target.id, typ):
+        #             self._getters.append(self.parse_line('\n' * (item.lineno - 1) + getter))
+        #             self._getters[-1].pos = getpos(item)
 
+        # TODO: supprt contract importing
         elif isinstance(item.annotation, ast.Call) and item.annotation.func.id == "public":
             if isinstance(item.annotation.args[0], ast.Name) and item_name in self._contracts:
                 typ = ContractType(item_name)

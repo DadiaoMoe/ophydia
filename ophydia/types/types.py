@@ -79,10 +79,11 @@ class BaseType(NodeType):
             subs.append('positional')
         return str(self.typ) + (('(' + ', '.join(subs) + ')') if subs else '')
 
-
+# TODO: support contract type
 class ContractType(BaseType):
     def __init__(self, name):
-        super().__init__('address', name)
+        # super().__init__('address', name)
+        super().__init__('contract', name)
 
 
 # Data structure for a byte array
@@ -174,17 +175,37 @@ def canonicalize_type(t, is_indexed=False):
     if not isinstance(t, BaseType):
         raise Exception("Cannot canonicalize non-base type: %r" % t)
 
+    # TODO: 
     t = t.typ
-    if t == 'int128':
-        return 'int128'
-    elif t == 'decimal':
-        return 'fixed168x10'
+    # if t == 'int128':
+    #     return 'int128'
+    # elif t == 'decimal':
+    #     return 'fixed168x10'
+    # elif t == 'bool':
+    #     return 'bool'
+    # elif t == 'uint256':
+    #     return 'uint256'
+    # elif t == 'address' or t == 'bytes32':
+    #     return t
+    # raise Exception("Invalid or unsupported type: " + repr(t))
+    if t == 'integer':
+        return 'integer'
+    elif t == 'amount':
+        return 'amount'
     elif t == 'bool':
         return 'bool'
-    elif t == 'uint256':
-        return 'uint256'
-    elif t == 'address' or t == 'bytes32':
-        return t
+    elif t == 'string':
+        return 'string'
+    elif t == 'hash':
+        return 'hash'
+    elif t == 'asset':
+        return 'asset'
+    elif t == 'publickey':
+        return 'publickey'
+    elif t == 'signature':
+        return 'signature'
+    elif t == 'program':
+        return 'program'
     raise Exception("Invalid or unsupported type: " + repr(t))
 
 
@@ -221,7 +242,7 @@ def parse_unit(item, custom_units):
     else:
         raise InvalidTypeException("Invalid unit expression", item)
 
-
+# TODO: handle types here
 # Parses an expression representing a type. Annotation refers to whether
 # the type is to be located in memory or storage
 def parse_type(item, location, sigs=None, custom_units=None):
@@ -238,16 +259,21 @@ def parse_type(item, location, sigs=None, custom_units=None):
             raise InvalidTypeException("Invalid base type: " + item.id, item)
     # Units, e.g. num (1/sec) or contracts
     elif isinstance(item, ast.Call):
+        # TODO
         # Contract_types
-        if item.func.id == 'address':
-            if sigs and item.args[0].id in sigs:
-                return ContractType(item.args[0].id)
+        # if item.func.id == 'address':
+        #     if sigs and item.args[0].id in sigs:
+        #         return ContractType(item.args[0].id)
         if not isinstance(item.func, ast.Name):
             raise InvalidTypeException("Malformed unit type:", item)
         base_type = item.func.id
-        if base_type not in ('int128', 'uint256', 'decimal'):
-            raise InvalidTypeException("You must use int128, uint256, decimal, address, contract, \
-                for variable declarations and indexed for logging topics ", item)
+        # TODO:
+        # if base_type not in ('int128', 'uint256', 'decimal'):
+        #     raise InvalidTypeException("You must use int128, uint256, decimal, address, contract, \
+        #         for variable declarations and indexed for logging topics ", item)
+        if base_type not in ('integer', 'amount', 'bool', 'string', 'hash', 'asset', 'publickey', 'signature', 'program'):
+            raise InvalidTypeException("You must use 'integer', 'amount', 'bool', 'string', 'hash', 'asset', 'publickey', 'signature', 'program', \
+                for variable declarations ", item)
         if len(item.args) == 0:
             raise InvalidTypeException("Malformed unit type", item)
         if isinstance(item.args[-1], ast.Name) and item.args[-1].id == "positional":
@@ -331,10 +357,11 @@ def are_units_compatible(frm, to):
     to_unit = getattr(to, 'unit', 0)
     return frm_unit is None or (frm_unit == to_unit and frm.positional == to.positional)
 
-
+# TODO:
 # Is a type representing a number?
 def is_numeric_type(typ):
-    return isinstance(typ, BaseType) and typ.typ in ('int128', 'uint256', 'decimal')
+    # return isinstance(typ, BaseType) and typ.typ in ('int128', 'uint256', 'decimal')
+    return isinstance(typ, BaseType) and typ.typ in ('integer', 'amount')
 
 
 # Is a type representing some particular base type?

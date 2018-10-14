@@ -98,14 +98,17 @@ class SizeLimits:
     MINDECIMAL = (-2**127) * DECIMAL_DIVISOR
     MAX_UINT256 = 2**256 - 1
 
+    # TODO: fix here
     @classmethod
     def in_bounds(cls, type_str, value):
         assert isinstance(type_str, str)
-        if type_str == 'decimal':
-            return float(cls.MINDECIMAL) <= value <= float(cls.MAXDECIMAL)
-        if type_str == 'uint256':
-            return 0 <= value <= cls.MAX_UINT256
-        elif type_str == 'int128':
+        # if type_str == 'decimal':
+        #     return float(cls.MINDECIMAL) <= value <= float(cls.MAXDECIMAL)
+        # if type_str == 'uint256':
+        #     return 0 <= value <= cls.MAX_UINT256
+        # elif type_str == 'int128':
+        #     return cls.MINNUM <= value <= cls.MAXNUM
+        if (type_str == 'integer') or (type_str == 'amount'):
             return cls.MINNUM <= value <= cls.MAXNUM
         else:
             raise Exception('Unknown type "%s" supplied.' % type_str)
@@ -129,22 +132,30 @@ RLP_DECODER_ADDRESS = hex_to_int('0x5185D17c44699cecC3133114F8df70753b856709')
 # Publish this tx to create the contract: 0xf90237808506fc23ac00830330888080b902246102128061000e60003961022056600060007f010000000000000000000000000000000000000000000000000000000000000060003504600060c082121515585760f882121561004d5760bf820336141558576001905061006e565b600181013560f783036020035260005160f6830301361415585760f6820390505b5b368112156101c2577f010000000000000000000000000000000000000000000000000000000000000081350483602086026040015260018501945060808112156100d55760018461044001526001828561046001376001820191506021840193506101bc565b60b881121561014357608081038461044001526080810360018301856104600137608181141561012e5760807f010000000000000000000000000000000000000000000000000000000000000060018401350412151558575b607f81038201915060608103840193506101bb565b60c08112156101b857600182013560b782036020035260005160388112157f010000000000000000000000000000000000000000000000000000000000000060018501350402155857808561044001528060b6838501038661046001378060b6830301830192506020810185019450506101ba565bfe5b5b5b5061006f565b601f841315155857602060208502016020810391505b6000821215156101fc578082604001510182826104400301526020820391506101d8565b808401610420528381018161044003f350505050505b6000f31b2d4f
 # This is the contract address: 0xCb969cAAad21A78a24083164ffa81604317Ab603
 
+## TODO: types for ophydia
 # Available base types
-base_types = ['int128', 'decimal', 'bytes32', 'uint256', 'bool', 'address']
+# base_types = ['int128', 'decimal', 'bytes32', 'uint256', 'bool', 'address']
+base_types = ['integer', 'amount', 'bool', 'string', 'hash', 'asset', 'publickey', 'signature', 'program']
 
+## TODO: types for ophydia
 # Keywords available for ast.Call type
-valid_call_keywords = ['uint256', 'int128', 'decimal', 'address', 'contract', 'indexed']
+# valid_call_keywords = ['uint256', 'int128', 'decimal', 'address', 'contract', 'indexed']
+valid_call_keywords = ['integer', 'amount']
 
+## TODO: adapt for btm
 # Valid base units
 valid_units = ['wei', 'sec']
 
+# TODO: clean
 # Valid attributes for global variables
-valid_global_keywords = ['public', 'modifying', 'event', 'constant'] + valid_units + valid_call_keywords
+# valid_global_keywords = ['public', 'modifying', 'event', 'constant'] + valid_units + valid_call_keywords
+valid_global_keywords = ['public', 'constant'] + valid_units + valid_call_keywords
 
 # TODO: adapt for btm
 # Cannot be used for variable or member naming
 reserved_words = [
-    'int128', 'uint256', 'address', 'bytes32',
+    # 'int128', 'uint256', 'address', 'bytes32',
+    'integer', 'amount', 'bool', 'string', 'hash', 'asset', 'publickey', 'signature', 'program',
     'if', 'for', 'while', 'until',
     'pass', 'def', 'push', 'dup', 'swap', 'send', 'call',
     'selfdestruct', 'assert', 'stop', 'throw',
@@ -164,7 +175,6 @@ valid_lll_macros = [
     '~codelen', 'label', 'goto'
 ]
 
-
 # Is a variable or member variable name valid?
 # Same conditions apply for function names and events
 def is_varname_valid(varname, custom_units):
@@ -183,6 +193,7 @@ def is_varname_valid(varname, custom_units):
         return False
     if varname.upper() in opcodes:
         return False
+    # TODO: check here
     if varname.lower() in built_in_functions:
         return False
     if not re.match('^[_a-zA-Z][a-zA-Z0-9_]*$', varname):
