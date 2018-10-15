@@ -214,12 +214,12 @@ def parse_tree_to_lll(code, origcode, runtime_only=False):
     # TODO: remove events
     # if global_ctx._events:
     #     sigs = parse_events(sigs, global_ctx._events, global_ctx._custom_units)
-    # TODO: breakpoint
     if global_ctx._contracts:
         external_contracts = parse_external_contracts(external_contracts, global_ctx._contracts)
     # If there is an init func...
     if initfunc:
         o.append(['seq', initializer_lll])
+        # TODO: breakpoint
         o.append(parse_func(initfunc[0], {**{'self': sigs}, **external_contracts}, origcode, global_ctx))
     # If there are regular functions...
     if otherfuncs or defaultfunc:

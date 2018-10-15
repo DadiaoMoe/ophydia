@@ -8,4 +8,4 @@ def reveal(s: string):
     h = -1
     b = -2
     # assert sha3(s) == h
-    # unlock() # TODO: seems doing nothing
+    # unlock()

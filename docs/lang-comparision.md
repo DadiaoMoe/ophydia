@@ -21,7 +21,7 @@ h: public(hash)
 @public
 def reveal(s: string):
     assert sha3(s) == h
-    unlock() // TODO: seems doing nothing
+    unlock()
 ```
 
 
@@ -59,13 +59,13 @@ borrower: public(program)
 def repay():
     # requires has been removed in equity
     # requires(amount_loaned, asset_loaned)
-    lock_other_with(amount_loaned, asset_loaned, lender)
-    lock_with(borrower)
+    lock_with(amount_mortage, asset_mortage, lender)
+    lock_with(amount_loaned, asset_loaned, borrower)
 
 @public
 def default():
     assert above(repayment_height)
-    lock_with(lender)
+    lock_with(amount_loaned, asset_loaned, lender)
 ```
 
 
