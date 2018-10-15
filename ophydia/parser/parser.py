@@ -333,7 +333,8 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
         sigs=sigs,
         return_type=sig.output_type,
         is_constant=sig.const,
-        is_payable=sig.payable,
+        # TODO: remove payable
+        # is_payable=sig.payable,
         origcode=origcode,
         is_private=sig.private,
         method_id=sig.method_id
@@ -350,7 +351,9 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
     # function to jump to after a function has executed.
     _post_callback_ptr = "{}_{}_post_callback_ptr".format(sig.name, sig.method_id)
     if sig.private:
-        context.callback_ptr = context.new_placeholder(typ=BaseType('uint256'))
+        # TODO: change to integer
+        # context.callback_ptr = context.new_placeholder(typ=BaseType('uint256'))
+        context.callback_ptr = context.new_placeholder(typ=BaseType('integer'))
         clampers.append(
             LLLnode.from_list(['mstore', context.callback_ptr, 'pass'], annotation='pop callback pointer')
         )
@@ -378,6 +381,7 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
 
     # Add asserts for payable and internal
     # private never gets payable check.
+    # TODO: maybe "if not sig.private"?
     if not sig.payable and not sig.private:
         clampers.append(['assert', ['iszero', 'callvalue']])
 
@@ -394,7 +398,9 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
     # Private function copiers. No clamping for private functions.
     dyn_variable_names = [a.name for a in base_args if isinstance(a.typ, ByteArrayType)]
     if sig.private and dyn_variable_names:
-        i_placeholder = context.new_placeholder(typ=BaseType('uint256'))
+        # TODO: change to integer
+        # i_placeholder = context.new_placeholder(typ=BaseType('uint256'))
+        i_placeholder = context.new_placeholder(typ=BaseType('integer'))
         unpackers = []
         for idx, var_name in enumerate(dyn_variable_names):
             var = context.vars[var_name]
@@ -415,6 +421,7 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
     # Create "clampers" (input well-formedness checkers)
     # Return function body
     if sig.name == '__init__':
+        # TODO: breakpoint
         o = LLLnode.from_list(['seq'] + clampers + [parse_body(code.body, context)], pos=getpos(code))
     elif is_default_func(sig):
         if len(sig.args) > 0:
@@ -479,9 +486,11 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
                                 dynamics.append(var.pos)
                             else:
                                 _size = var.size * 32
+                            # TODO: breakpoint
                             default_copiers.append(get_arg_copier(sig=sig, memory_dest=var.pos, total_size=_size, offset=_offset))
                         else:
                             # Add clampers.
+                            # TODO: breakpoint
                             default_copiers.append(make_clamper(calldata_offset - 4, var.pos, var.typ))
                             # Add copying code.
                             if isinstance(var.typ, ByteArrayType):
@@ -492,10 +501,13 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
 
                     # Unpack byte array if necessary.
                     if dynamics:
-                        i_placeholder = context.new_placeholder(typ=BaseType('uint256'))
+                        # TODO: change to integer
+                        # i_placeholder = context.new_placeholder(typ=BaseType('uint256'))
+                        i_placeholder = context.new_placeholder(typ=BaseType('integer'))
                         for idx, var_pos in enumerate(dynamics):
                             ident = 'unpack_default_sig_dyn_%d_arg%d' % (default_sig.method_id, idx)
                             default_copiers.append(
+                                # TODO: breakpoint
                                 make_unpacker(ident=ident, i_placeholder=i_placeholder, begin_pos=var_pos)
                             )
                     default_copiers.append(0)  # for over arching seq, POP
@@ -541,6 +553,7 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
         )
 
     o.context = context
+    # TODO: breakpoint
     o.total_gas = o.gas + calc_mem_gas(o.context.next_mem)
     o.func_name = sig.name
     return o
