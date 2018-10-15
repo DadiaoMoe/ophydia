@@ -258,7 +258,7 @@ def parse_type(item, location, sigs=None, custom_units=None):
             raise InvalidTypeException("Invalid base type: " + item.id, item)
     # Units, e.g. num (1/sec) or contracts
     elif isinstance(item, ast.Call):
-        # TODO
+        # TODO:
         # Contract_types
         # if item.func.id == 'address':
         #     if sigs and item.args[0].id in sigs:

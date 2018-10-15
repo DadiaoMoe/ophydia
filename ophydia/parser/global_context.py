@@ -42,7 +42,7 @@ class GlobalContext:
 
     def __init__(self):
         self._contracts = dict()
-        # TDOO: remove events
+        # TODO: remove events
         # self._events = list()
         self._globals = dict()
         self._defs = list()
@@ -67,7 +67,7 @@ class GlobalContext:
             # Statements of the form:
             # variable_name: type
             elif isinstance(item, ast.AnnAssign):
-                # TDOO: remove events
+                # TODO: remove events
                 # global_ctx.add_globals_and_events(item)
                 global_ctx.add_globals(item)
             # Function definitions

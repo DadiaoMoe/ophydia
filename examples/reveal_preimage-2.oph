@@ -7,4 +7,4 @@ contract reveal_preimage:
     @public
     def reveal(s: string):
         assert sha3(s) == h
-        unlock() # TODO: seems doing nothing
+        unlock()
