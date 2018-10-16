@@ -117,7 +117,7 @@ def generate_default_arg_sigs(code, _contracts, _custom_units):
 
     return sig_fun_defs
 
-
+# TODO: breakpoint
 # Get ABI signature
 def mk_full_signature(code):
     o = []
@@ -219,7 +219,6 @@ def parse_tree_to_lll(code, origcode, runtime_only=False):
     # If there is an init func...
     if initfunc:
         o.append(['seq', initializer_lll])
-        # TODO: breakpoint
         o.append(parse_func(initfunc[0], {**{'self': sigs}, **external_contracts}, origcode, global_ctx))
     # If there are regular functions...
     if otherfuncs or defaultfunc:
@@ -238,15 +237,20 @@ def make_clamper(datapos, mempos, typ, is_init=False):
         data_decl = ['codeload', ['add', '~codelen', datapos]]
         copier = lambda pos, sz: ['codecopy', mempos, ['add', '~codelen', pos], sz]
     # Numbers: make sure they're in range
-    if is_base_type(typ, 'int128'):
+    # TODO: change here
+    # if is_base_type(typ, 'int128'):
+    if is_base_type(typ, 'integer') or is_base_type(typ, 'amount'):
+        # return LLLnode.from_list(['clamp', ['mload', MemoryPositions.MINNUM], data_decl, ['mload', MemoryPositions.MAXNUM]],
+        #                          typ=typ, annotation='checking int128 input')
         return LLLnode.from_list(['clamp', ['mload', MemoryPositions.MINNUM], data_decl, ['mload', MemoryPositions.MAXNUM]],
-                                 typ=typ, annotation='checking int128 input')
+                                 typ=typ, annotation='checking integer/amount input')
     # Booleans: make sure they're zero or one
     elif is_base_type(typ, 'bool'):
         return LLLnode.from_list(['uclamplt', data_decl, 2], typ=typ, annotation='checking bool input')
     # Addresses: make sure they're in range
-    elif is_base_type(typ, 'address'):
-        return LLLnode.from_list(['uclamplt', data_decl, ['mload', MemoryPositions.ADDRSIZE]], typ=typ, annotation='checking address input')
+    # TODO: skip legacy address here
+    # elif is_base_type(typ, 'address'):
+    #     return LLLnode.from_list(['uclamplt', data_decl, ['mload', MemoryPositions.ADDRSIZE]], typ=typ, annotation='checking address input')
     # Bytes: make sure they have the right size
     elif isinstance(typ, ByteArrayType):
         return LLLnode.from_list(['seq',
@@ -421,7 +425,6 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
     # Create "clampers" (input well-formedness checkers)
     # Return function body
     if sig.name == '__init__':
-        # TODO: breakpoint
         o = LLLnode.from_list(['seq'] + clampers + [parse_body(code.body, context)], pos=getpos(code))
     elif is_default_func(sig):
         if len(sig.args) > 0:
@@ -486,11 +489,9 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
                                 dynamics.append(var.pos)
                             else:
                                 _size = var.size * 32
-                            # TODO: breakpoint
                             default_copiers.append(get_arg_copier(sig=sig, memory_dest=var.pos, total_size=_size, offset=_offset))
                         else:
                             # Add clampers.
-                            # TODO: breakpoint
                             default_copiers.append(make_clamper(calldata_offset - 4, var.pos, var.typ))
                             # Add copying code.
                             if isinstance(var.typ, ByteArrayType):
@@ -507,7 +508,6 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
                         for idx, var_pos in enumerate(dynamics):
                             ident = 'unpack_default_sig_dyn_%d_arg%d' % (default_sig.method_id, idx)
                             default_copiers.append(
-                                # TODO: breakpoint
                                 make_unpacker(ident=ident, i_placeholder=i_placeholder, begin_pos=var_pos)
                             )
                     default_copiers.append(0)  # for over arching seq, POP
@@ -553,7 +553,6 @@ def parse_func(code, sigs, origcode, global_ctx, _vars=None):
         )
 
     o.context = context
-    # TODO: breakpoint
     o.total_gas = o.gas + calc_mem_gas(o.context.next_mem)
     o.func_name = sig.name
     return o
@@ -569,7 +568,7 @@ def parse_body(code, context):
         o.append(lll)
     return LLLnode.from_list(['seq'] + o, pos=getpos(code[0]) if code else None)
 
-
+# TODO: will it be called?
 def external_contract_call(node, context, contract_name, contract_address, pos, value=None, gas=None):
     if value is None:
         value = 0
@@ -582,6 +581,7 @@ def external_contract_call(node, context, contract_name, contract_address, pos, 
         raise FunctionDeclarationException("Function not declared yet: %s (reminder: "
                                                     "function must be declared in the correct contract)" % method_name, pos)
     sig = context.sigs[contract_name][method_name]
+    # TODO: breakpoint
     inargs, inargsize, _ = pack_arguments(sig, [parse_expr(arg, context) for arg in node.args], context, pos=pos)
     output_placeholder, output_size, returner = get_external_contract_call_output(sig, context)
     sub = ['seq', ['assert', ['extcodesize', contract_address]],
@@ -618,193 +618,194 @@ def parse_expr(expr, context):
 def parse_stmt(stmt, context):
     return Stmt(stmt, context).lll_node
 
+# TODO: should never be called
+# def pack_logging_topics(event_id, args, expected_topics, context, pos):
+#     topics = [event_id]
+#     for pos, expected_topic in enumerate(expected_topics):
+#         expected_type = expected_topic.typ
+#         arg = args[pos]
+#         value = parse_expr(arg, context)
+#         arg_type = value.typ
 
-def pack_logging_topics(event_id, args, expected_topics, context, pos):
-    topics = [event_id]
-    for pos, expected_topic in enumerate(expected_topics):
-        expected_type = expected_topic.typ
-        arg = args[pos]
-        value = parse_expr(arg, context)
-        arg_type = value.typ
+#         if isinstance(arg_type, ByteArrayType) and isinstance(expected_type, ByteArrayType):
+#             if arg_type.maxlen > expected_type.maxlen:
+#                 raise TypeMismatchException("Topic input bytes are too big: %r %r" % (arg_type, expected_type), pos)
+#             if isinstance(arg, ast.Str):
+#                 bytez, bytez_length = string_to_bytes(arg.s)
+#                 if len(bytez) > 32:
+#                     raise InvalidLiteralException("Can only log a maximum of 32 bytes at a time.", pos)
+#                 topics.append(bytes_to_int(bytez + b'\x00' * (32 - bytez_length)))
+#             else:
+#                 if value.location == "memory":
+#                     size = ['mload', value]
+#                 elif value.location == "storage":
+#                     size = ['sload', ['sha3_32', value]]
+#                 topics.append(byte_array_to_num(value, arg, 'uint256', size))
+#         else:
+#             value = unwrap_location(value)
+#             value = base_type_conversion(value, arg_type, expected_type, pos=pos)
+#             topics.append(value)
 
-        if isinstance(arg_type, ByteArrayType) and isinstance(expected_type, ByteArrayType):
-            if arg_type.maxlen > expected_type.maxlen:
-                raise TypeMismatchException("Topic input bytes are too big: %r %r" % (arg_type, expected_type), pos)
-            if isinstance(arg, ast.Str):
-                bytez, bytez_length = string_to_bytes(arg.s)
-                if len(bytez) > 32:
-                    raise InvalidLiteralException("Can only log a maximum of 32 bytes at a time.", pos)
-                topics.append(bytes_to_int(bytez + b'\x00' * (32 - bytez_length)))
-            else:
-                if value.location == "memory":
-                    size = ['mload', value]
-                elif value.location == "storage":
-                    size = ['sload', ['sha3_32', value]]
-                topics.append(byte_array_to_num(value, arg, 'uint256', size))
-        else:
-            value = unwrap_location(value)
-            value = base_type_conversion(value, arg_type, expected_type, pos=pos)
-            topics.append(value)
+#     return topics
 
-    return topics
+# TODO: should never be called
+# def pack_args_by_32(holder, maxlen, arg, typ, context, placeholder,
+#                     dynamic_offset_counter=None, datamem_start=None, zero_pad_i=None, pos=None):
+#     """
+#     Copy necessary variables to pre-allocated memory section.
 
+#     :param holder: Complete holder for all args
+#     :param maxlen: Total length in bytes of the full arg section (static + dynamic).
+#     :param arg: Current arg to pack
+#     :param context: Context of arg
+#     :param placeholder: Static placeholder for static argument part.
+#     :param dynamic_offset_counter: position counter stored in static args.
+#     :param dynamic_placeholder: pointer to current position in memory to write dynamic values to.
+#     :param datamem_start: position where the whole datemem section starts.
+#     """
 
-def pack_args_by_32(holder, maxlen, arg, typ, context, placeholder,
-                    dynamic_offset_counter=None, datamem_start=None, zero_pad_i=None, pos=None):
-    """
-    Copy necessary variables to pre-allocated memory section.
+#     if isinstance(typ, BaseType):
+#         value = parse_expr(arg, context)
+#         value = base_type_conversion(value, value.typ, typ, pos)
+#         holder.append(LLLnode.from_list(['mstore', placeholder, value], typ=typ, location='memory'))
+#     elif isinstance(typ, ByteArrayType):
+#         bytez = b''
 
-    :param holder: Complete holder for all args
-    :param maxlen: Total length in bytes of the full arg section (static + dynamic).
-    :param arg: Current arg to pack
-    :param context: Context of arg
-    :param placeholder: Static placeholder for static argument part.
-    :param dynamic_offset_counter: position counter stored in static args.
-    :param dynamic_placeholder: pointer to current position in memory to write dynamic values to.
-    :param datamem_start: position where the whole datemem section starts.
-    """
+#         source_expr = Expr(arg, context)
+#         if isinstance(arg, ast.Str):
+#             if len(arg.s) > typ.maxlen:
+#                 raise TypeMismatchException("Data input bytes are to big: %r %r" % (len(arg.s), typ), pos)
+#             for c in arg.s:
+#                 if ord(c) >= 256:
+#                     raise InvalidLiteralException("Cannot insert special character %r into byte array" % c, pos)
+#                 bytez += bytes([ord(c)])
 
-    if isinstance(typ, BaseType):
-        value = parse_expr(arg, context)
-        value = base_type_conversion(value, value.typ, typ, pos)
-        holder.append(LLLnode.from_list(['mstore', placeholder, value], typ=typ, location='memory'))
-    elif isinstance(typ, ByteArrayType):
-        bytez = b''
+#             holder.append(source_expr.lll_node)
 
-        source_expr = Expr(arg, context)
-        if isinstance(arg, ast.Str):
-            if len(arg.s) > typ.maxlen:
-                raise TypeMismatchException("Data input bytes are to big: %r %r" % (len(arg.s), typ), pos)
-            for c in arg.s:
-                if ord(c) >= 256:
-                    raise InvalidLiteralException("Cannot insert special character %r into byte array" % c, pos)
-                bytez += bytes([ord(c)])
+#         # Set static offset, in arg slot.
+#         holder.append(LLLnode.from_list(['mstore', placeholder, ['mload', dynamic_offset_counter]]))
+#         # Get the biginning to write the ByteArray to.
+#         dest_placeholder = LLLnode.from_list(
+#             ['add', datamem_start, ['mload', dynamic_offset_counter]],
+#             typ=typ, location='memory', annotation="pack_args_by_32:dest_placeholder")
+#         copier = make_byte_array_copier(dest_placeholder, source_expr.lll_node, pos=pos)
+#         holder.append(copier)
+#         # Add zero padding.
+#         new_maxlen = ceil32(source_expr.lll_node.typ.maxlen)
 
-            holder.append(source_expr.lll_node)
+#         holder.append(
+#             ['with', '_bytearray_loc', dest_placeholder,
+#                 ['seq',
+#                     ['repeat', zero_pad_i, ['mload', '_bytearray_loc'], new_maxlen,
+#                         ['seq',
+#                             ['if', ['ge', ['mload', zero_pad_i], new_maxlen], 'break'],  # stay within allocated bounds
+#                             ['mstore8', ['add', ['add', '_bytearray_loc', 32], ['mload', zero_pad_i]], 0]]]]]
+#         )
+#         # Increment offset counter.
+#         increment_counter = LLLnode.from_list(
+#             ['mstore', dynamic_offset_counter,
+#                 ['add', ['add', ['mload', dynamic_offset_counter], ['ceil32', ['mload', dest_placeholder]]], 32]]
+#         )
+#         holder.append(increment_counter)
+#     elif isinstance(typ, ListType):
+#         maxlen += (typ.count - 1) * 32
+#         typ = typ.subtype
 
-        # Set static offset, in arg slot.
-        holder.append(LLLnode.from_list(['mstore', placeholder, ['mload', dynamic_offset_counter]]))
-        # Get the biginning to write the ByteArray to.
-        dest_placeholder = LLLnode.from_list(
-            ['add', datamem_start, ['mload', dynamic_offset_counter]],
-            typ=typ, location='memory', annotation="pack_args_by_32:dest_placeholder")
-        copier = make_byte_array_copier(dest_placeholder, source_expr.lll_node, pos=pos)
-        holder.append(copier)
-        # Add zero padding.
-        new_maxlen = ceil32(source_expr.lll_node.typ.maxlen)
+#         def check_list_type_match(provided):  # Check list types match.
+#             if provided != typ:
+#                 raise TypeMismatchException(
+#                     "Log list type '%s' does not match provided, expected '%s'" % (provided, typ)
+#                 )
 
-        holder.append(
-            ['with', '_bytearray_loc', dest_placeholder,
-                ['seq',
-                    ['repeat', zero_pad_i, ['mload', '_bytearray_loc'], new_maxlen,
-                        ['seq',
-                            ['if', ['ge', ['mload', zero_pad_i], new_maxlen], 'break'],  # stay within allocated bounds
-                            ['mstore8', ['add', ['add', '_bytearray_loc', 32], ['mload', zero_pad_i]], 0]]]]]
-        )
-        # Increment offset counter.
-        increment_counter = LLLnode.from_list(
-            ['mstore', dynamic_offset_counter,
-                ['add', ['add', ['mload', dynamic_offset_counter], ['ceil32', ['mload', dest_placeholder]]], 32]]
-        )
-        holder.append(increment_counter)
-    elif isinstance(typ, ListType):
-        maxlen += (typ.count - 1) * 32
-        typ = typ.subtype
+#         # List from storage
+#         if isinstance(arg, ast.Attribute) and arg.value.id == 'self':
+#             stor_list = context.globals[arg.attr]
+#             check_list_type_match(stor_list.typ.subtype)
+#             size = stor_list.typ.count
+#             for offset in range(0, size):
+#                 arg2 = LLLnode.from_list(['sload', ['add', ['sha3_32', Expr(arg, context).lll_node], offset]],
+#                                          typ=typ)
+#                 p_holder = context.new_placeholder(BaseType(32)) if offset > 0 else placeholder
+#                 holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, p_holder, pos=pos)
+#         # List from variable.
+#         elif isinstance(arg, ast.Name):
+#             size = context.vars[arg.id].size
+#             pos = context.vars[arg.id].pos
+#             check_list_type_match(context.vars[arg.id].typ.subtype)
+#             for i in range(0, size):
+#                 offset = 32 * i
+#                 arg2 = LLLnode.from_list(pos + offset, typ=typ, location='memory')
+#                 p_holder = context.new_placeholder(BaseType(32)) if i > 0 else placeholder
+#                 holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, p_holder, pos=pos)
+#         # is list literal.
+#         else:
+#             holder, maxlen = pack_args_by_32(holder, maxlen, arg.elts[0], typ, context, placeholder, pos=pos)
+#             for j, arg2 in enumerate(arg.elts[1:]):
+#                 holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, context.new_placeholder(BaseType(32)), pos=pos)
 
-        def check_list_type_match(provided):  # Check list types match.
-            if provided != typ:
-                raise TypeMismatchException(
-                    "Log list type '%s' does not match provided, expected '%s'" % (provided, typ)
-                )
-
-        # List from storage
-        if isinstance(arg, ast.Attribute) and arg.value.id == 'self':
-            stor_list = context.globals[arg.attr]
-            check_list_type_match(stor_list.typ.subtype)
-            size = stor_list.typ.count
-            for offset in range(0, size):
-                arg2 = LLLnode.from_list(['sload', ['add', ['sha3_32', Expr(arg, context).lll_node], offset]],
-                                         typ=typ)
-                p_holder = context.new_placeholder(BaseType(32)) if offset > 0 else placeholder
-                holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, p_holder, pos=pos)
-        # List from variable.
-        elif isinstance(arg, ast.Name):
-            size = context.vars[arg.id].size
-            pos = context.vars[arg.id].pos
-            check_list_type_match(context.vars[arg.id].typ.subtype)
-            for i in range(0, size):
-                offset = 32 * i
-                arg2 = LLLnode.from_list(pos + offset, typ=typ, location='memory')
-                p_holder = context.new_placeholder(BaseType(32)) if i > 0 else placeholder
-                holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, p_holder, pos=pos)
-        # is list literal.
-        else:
-            holder, maxlen = pack_args_by_32(holder, maxlen, arg.elts[0], typ, context, placeholder, pos=pos)
-            for j, arg2 in enumerate(arg.elts[1:]):
-                holder, maxlen = pack_args_by_32(holder, maxlen, arg2, typ, context, context.new_placeholder(BaseType(32)), pos=pos)
-
-    return holder, maxlen
+#     return holder, maxlen
 
 
-# Pack logging data arguments
-def pack_logging_data(expected_data, args, context, pos):
-    # Checks to see if there's any data
-    if not args:
-        return ['seq'], 0, None, 0
-    holder = ['seq']
-    maxlen = len(args) * 32  # total size of all packed args (upper limit)
+# TODO: should never be called
+# # Pack logging data arguments
+# def pack_logging_data(expected_data, args, context, pos):
+#     # Checks to see if there's any data
+#     if not args:
+#         return ['seq'], 0, None, 0
+#     holder = ['seq']
+#     maxlen = len(args) * 32  # total size of all packed args (upper limit)
 
-    requires_dynamic_offset = any([isinstance(data.typ, ByteArrayType) for data in expected_data])
-    if requires_dynamic_offset:
-        zero_pad_i = context.new_placeholder(BaseType('uint256'))  # Iterator used to zero pad memory.
-        dynamic_offset_counter = context.new_placeholder(BaseType(32))
-        dynamic_placeholder = context.new_placeholder(BaseType(32))
-    else:
-        dynamic_offset_counter = None
-        zero_pad_i = None
+#     requires_dynamic_offset = any([isinstance(data.typ, ByteArrayType) for data in expected_data])
+#     if requires_dynamic_offset:
+#         zero_pad_i = context.new_placeholder(BaseType('uint256'))  # Iterator used to zero pad memory.
+#         dynamic_offset_counter = context.new_placeholder(BaseType(32))
+#         dynamic_placeholder = context.new_placeholder(BaseType(32))
+#     else:
+#         dynamic_offset_counter = None
+#         zero_pad_i = None
 
-    # Populate static placeholders.
-    placeholder_map = {}
-    for i, (arg, data) in enumerate(zip(args, expected_data)):
-        typ = data.typ
-        placeholder = context.new_placeholder(BaseType(32))
-        placeholder_map[i] = placeholder
-        if not isinstance(typ, ByteArrayType):
-            holder, maxlen = pack_args_by_32(holder, maxlen, arg, typ, context, placeholder, zero_pad_i=zero_pad_i, pos=pos)
+#     # Populate static placeholders.
+#     placeholder_map = {}
+#     for i, (arg, data) in enumerate(zip(args, expected_data)):
+#         typ = data.typ
+#         placeholder = context.new_placeholder(BaseType(32))
+#         placeholder_map[i] = placeholder
+#         if not isinstance(typ, ByteArrayType):
+#             holder, maxlen = pack_args_by_32(holder, maxlen, arg, typ, context, placeholder, zero_pad_i=zero_pad_i, pos=pos)
 
-    # Dynamic position starts right after the static args.
-    if requires_dynamic_offset:
-        holder.append(LLLnode.from_list(['mstore', dynamic_offset_counter, maxlen]))
+#     # Dynamic position starts right after the static args.
+#     if requires_dynamic_offset:
+#         holder.append(LLLnode.from_list(['mstore', dynamic_offset_counter, maxlen]))
 
-    # Calculate maximum dynamic offset placeholders, used for gas estimation.
-    for i, (arg, data) in enumerate(zip(args, expected_data)):
-        typ = data.typ
-        if isinstance(typ, ByteArrayType):
-            maxlen += 32 + ceil32(typ.maxlen)
+#     # Calculate maximum dynamic offset placeholders, used for gas estimation.
+#     for i, (arg, data) in enumerate(zip(args, expected_data)):
+#         typ = data.typ
+#         if isinstance(typ, ByteArrayType):
+#             maxlen += 32 + ceil32(typ.maxlen)
 
-    if requires_dynamic_offset:
-        datamem_start = dynamic_placeholder + 32
-    else:
-        datamem_start = placeholder_map[0]
+#     if requires_dynamic_offset:
+#         datamem_start = dynamic_placeholder + 32
+#     else:
+#         datamem_start = placeholder_map[0]
 
-    # Copy necessary data into allocated dynamic section.
-    for i, (arg, data) in enumerate(zip(args, expected_data)):
-        typ = data.typ
-        if isinstance(typ, ByteArrayType):
-            pack_args_by_32(
-                holder=holder,
-                maxlen=maxlen,
-                arg=arg,
-                typ=typ,
-                context=context,
-                placeholder=placeholder_map[i],
-                datamem_start=datamem_start,
-                dynamic_offset_counter=dynamic_offset_counter,
-                zero_pad_i=zero_pad_i,
-                pos=pos
-            )
+#     # Copy necessary data into allocated dynamic section.
+#     for i, (arg, data) in enumerate(zip(args, expected_data)):
+#         typ = data.typ
+#         if isinstance(typ, ByteArrayType):
+#             pack_args_by_32(
+#                 holder=holder,
+#                 maxlen=maxlen,
+#                 arg=arg,
+#                 typ=typ,
+#                 context=context,
+#                 placeholder=placeholder_map[i],
+#                 datamem_start=datamem_start,
+#                 dynamic_offset_counter=dynamic_offset_counter,
+#                 zero_pad_i=zero_pad_i,
+#                 pos=pos
+#             )
 
-    return holder, maxlen, dynamic_offset_counter, datamem_start
+#     return holder, maxlen, dynamic_offset_counter, datamem_start
 
 
 def parse_to_lll(kode):

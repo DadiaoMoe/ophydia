@@ -268,7 +268,7 @@ def add_variable_offset(parent, key, pos):
     else:
         raise TypeMismatchException("Cannot access the child of a constant variable! %r" % typ, pos)
 
-
+# TODO:
 # Convert from one base type to another
 def base_type_conversion(orig, frm, to, pos):
     orig = unwrap_location(orig)
