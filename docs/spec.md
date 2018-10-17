@@ -15,11 +15,9 @@ __Ophydia__ is inspired by __Vyper__, and simplified by removing _event_ and _@p
 | Signature | signature | string |
 | Program | program | string |
 
-## how to define constant
-__TODO:__ support constant and migrate to integet and amount
-
+__TODO:__ support constant
 ```
-TOTAL_SUPPLY: constant(uint256) = 10000000
+TOTAL_SUPPLY: constant(integer) = 10000000
 ```
 
 ## builtin functions
