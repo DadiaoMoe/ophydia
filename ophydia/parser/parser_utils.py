@@ -146,18 +146,32 @@ def make_byte_slice_copier(destination, source, length, max_length, pos=None):
 # Takes a <32 byte array as input, and outputs a number.
 def byte_array_to_num(arg, expr, out_type, offset=32,):
     if arg.location == "memory":
-        lengetter = LLLnode.from_list(['mload', '_sub'], typ=BaseType('int128'))
-        first_el_getter = LLLnode.from_list(['mload', ['add', 32, '_sub']], typ=BaseType('int128'))
+        # TODO:
+        # lengetter = LLLnode.from_list(['mload', '_sub'], typ=BaseType('int128'))
+        # first_el_getter = LLLnode.from_list(['mload', ['add', 32, '_sub']], typ=BaseType('int128'))
+        lengetter = LLLnode.from_list(['mload', '_sub'], typ=BaseType('integer'))
+        first_el_getter = LLLnode.from_list(['mload', ['add', 32, '_sub']], typ=BaseType('integer'))
     elif arg.location == "storage":
-        lengetter = LLLnode.from_list(['sload', ['sha3_32', '_sub']], typ=BaseType('int128'))
-        first_el_getter = LLLnode.from_list(['sload', ['add', 1, ['sha3_32', '_sub']]], typ=BaseType('int128'))
-    if out_type == 'int128':
+        # TODO:
+        # lengetter = LLLnode.from_list(['sload', ['sha3_32', '_sub']], typ=BaseType('int128'))
+        # first_el_getter = LLLnode.from_list(['sload', ['add', 1, ['sha3_32', '_sub']]], typ=BaseType('int128'))
+        lengetter = LLLnode.from_list(['sload', ['sha3_32', '_sub']], typ=BaseType('integer'))
+        first_el_getter = LLLnode.from_list(['sload', ['add', 1, ['sha3_32', '_sub']]], typ=BaseType('integer'))
+    # TODO:
+    # if out_type == 'int128':
+    #     result = ['clamp',
+    #                  ['mload', MemoryPositions.MINNUM],
+    #                  ['div', '_el1', ['exp', 256, ['sub', 32, '_len']]],
+    #                  ['mload', MemoryPositions.MAXNUM]]
+    # elif out_type == 'uint256':
+    #     result = ['div', '_el1', ['exp', 256, ['sub', offset, '_len']]]
+    if out_type == 'integer' or out_type == 'amount':
         result = ['clamp',
                      ['mload', MemoryPositions.MINNUM],
                      ['div', '_el1', ['exp', 256, ['sub', 32, '_len']]],
                      ['mload', MemoryPositions.MAXNUM]]
-    elif out_type == 'uint256':
-        result = ['div', '_el1', ['exp', 256, ['sub', offset, '_len']]]
+    # elif out_type == 'uint256':
+    #     result = ['div', '_el1', ['exp', 256, ['sub', offset, '_len']]]
     return LLLnode.from_list(['with', '_sub', arg,
                                  ['with', '_el1', first_el_getter,
                                     ['with', '_len', ['clamp', 0, lengetter, 32],
@@ -168,9 +182,13 @@ def byte_array_to_num(arg, expr, out_type, offset=32,):
 
 def get_length(arg):
     if arg.location == "memory":
-        return LLLnode.from_list(['mload', arg], typ=BaseType('int128'))
+        # TODO:
+        # return LLLnode.from_list(['mload', arg], typ=BaseType('int128'))
+        return LLLnode.from_list(['mload', arg], typ=BaseType('integer'))
     elif arg.location == "storage":
-        return LLLnode.from_list(['sload', ['sha3_32', arg]], typ=BaseType('int128'))
+        # TODO:
+        # return LLLnode.from_list(['sload', ['sha3_32', arg]], typ=BaseType('int128'))
+        return LLLnode.from_list(['sload', ['sha3_32', arg]], typ=BaseType('integer'))
 
 
 def getpos(node):
@@ -248,7 +266,9 @@ def add_variable_offset(parent, key, pos):
     elif isinstance(typ, ListType):
 
         subtype = typ.subtype
-        sub = ['uclamplt', base_type_conversion(key, key.typ, BaseType('int128'), pos=pos), typ.count]
+        # TODO:
+        # sub = ['uclamplt', base_type_conversion(key, key.typ, BaseType('int128'), pos=pos), typ.count]
+        sub = ['uclamplt', base_type_conversion(key, key.typ, BaseType('integer'), pos=pos), typ.count]
 
         if location == 'storage':
             return LLLnode.from_list(['add', ['sha3_32', parent], sub],
