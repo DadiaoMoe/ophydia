@@ -20,17 +20,19 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
 
-    output_format = {}
-    output_format['sourcecode'] = lambda file: file.read()
-    output_format['bytecode'] = lambda file: '0x' + main.main(file).hex()
-    output_format['opcode'] = lambda file: '0x11'
+    main.compile(args.input_file)
 
-    with open(args.input_file) as file:
-        fmt = args.format
-        if fmt not in output_format:
-            print('Format {} option not supported, choose one of {}.'.format(fmt, ','.join(output_format.keys())))
-        else:
-            print('{}:\n{}\n'.format(fmt, output_format[fmt](file)))
+    # output_format = {}
+    # output_format['sourcecode'] = lambda file: file.read()
+    # output_format['bytecode'] = lambda file: '0x' + main.main(file).hex()
+    # output_format['opcode'] = lambda file: '0x11'
+
+    # with open(args.input_file) as file:
+    #     fmt = args.format
+    #     if fmt not in output_format:
+    #         print('Format {} option not supported, choose one of {}.'.format(fmt, ','.join(output_format.keys())))
+    #     else:
+    #         print('{}:\n{}\n'.format(fmt, output_format[fmt](file)))
 
         # TODO: instantiate
         # contract_args = input('Input contract arguments, split by space:')
