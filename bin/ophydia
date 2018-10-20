@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import os
+import sys
+import ophydia
+import warnings
+
+from ophydia import main
+
+warnings.simplefilter('always')
+sys.tracebacklimit = os.environ.get('OPHYDIA_TRACEBACK_LIMIT', 0)
+
+parser = argparse.ArgumentParser(description='Ophydia programming language for Bytom')
+parser.add_argument('--version', action='version', version='{0}'.format(ophydia.__version__))
+parser.add_argument('-f', help='Format to print', default='bytecode', dest='format')
+parser.add_argument('input_file', help='Ophydia sourcecode to compile')
+
+args = parser.parse_args()
+
+if __name__ == '__main__':
+
+    output_format = {}
+    output_format['sourcecode'] = lambda file: file.read()
+    output_format['bytecode'] = lambda file: '0x' + main.main(file).hex()
+    output_format['opcode'] = lambda file: '0x11'
+
+    with open(args.input_file) as file:
+        fmt = args.format
+        if fmt not in output_format:
+            print('Format {} option not supported, choose one of {}.'.format(fmt, ','.join(output_format.keys())))
+        else:
+            print('{}:\n{}\n'.format(fmt, output_format[fmt](file)))
+
+        # TODO: instantiate
+        # contract_args = input('Input contract arguments, split by space:')
+        # print('instantiated:\n0x{}'.format(compiler.instantiate(code, contract_args).hex()))
